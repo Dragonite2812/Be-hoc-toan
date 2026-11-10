@@ -1,0 +1,12 @@
+{
+  "name": "Bé Học Toán",
+  "short_name": "Bé học toán",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#fff6df",
+  "theme_color": "#fff6df",
+  "icons": [
+    { "src": "apple-touch-icon.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
