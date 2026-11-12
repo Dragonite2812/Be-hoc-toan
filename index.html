@@ -12,13 +12,10 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icon-512.png">
 <link rel="manifest" href="manifest.json">
-<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}</style>
-</head>
-<body>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap">
 <style>
-  /* Bố cục: một màn hình cố định, không cuộn trang; khối đề bài ở giữa, bàn phím số to ở dưới cho ngón tay bé.
-     Giao diện chủ ý chỉ dùng một bộ màu sáng tươi dành cho trẻ em (không đổi theo chế độ tối). */
+  /* Bố cục: một màn hình, khối đề bài ở giữa, bàn phím to ở dưới cho ngón tay bé.
+     Giao diện chủ ý dùng một bộ màu sáng tươi dành cho trẻ em. */
   :root {
     color-scheme: light;
     --bg: #fff6df;
@@ -33,7 +30,10 @@
     --chip: #e4def5;
     --shadow: 0 6px 0 rgba(51, 48, 90, 0.16);
     --display: "Baloo 2", "Arial Rounded MT Bold", "Segoe UI", system-ui, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
+  [hidden] { display: none !important; }
   * { box-sizing: border-box; }
   html, body { height: 100%; }
   body {
@@ -48,7 +48,7 @@
 
   .screen {
     height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch;
-    padding-block: 18px;
+    padding-block: 16px;
     padding-left: max(16px, env(safe-area-inset-left, 0px));
     padding-right: max(16px, env(safe-area-inset-right, 0px));
   }
@@ -62,11 +62,24 @@
   .btn:active { transform: translateY(4px); box-shadow: 0 2px 0 rgba(51,48,90,.16); }
 
   /* ---------- Trang chính ---------- */
-  h1 { font-size: clamp(42px, 8vw, 78px); line-height: 1; margin: 12px 0 6px; color: var(--purple); }
-  .sub { font-size: clamp(20px, 3vw, 26px); color: var(--soft); margin: 0 0 22px; font-weight: 500; }
-  .modes { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; margin-bottom: 26px; }
+  .langToggle { display: flex; justify-content: center; gap: 10px; margin: 2px 0 6px; }
+  .langBtn {
+    background: var(--chip); color: var(--ink); font-size: 20px; padding: 6px 18px;
+    border-radius: 999px; box-shadow: 0 3px 0 rgba(51,48,90,.14);
+  }
+  .langBtn.sel { background: var(--purple); color: #fff; }
+  h1 { font-size: clamp(42px, 8vw, 78px); line-height: 1; margin: 8px 0 6px; color: var(--purple); }
+  .sub { font-size: clamp(20px, 3vw, 26px); color: var(--soft); margin: 0 0 18px; font-weight: 500; }
+  .levelNow {
+    display: inline-block; background: var(--card); border-radius: 999px; padding: 4px 18px;
+    font-size: clamp(17px, 2.4vw, 22px); font-weight: 700; color: var(--purple); margin-bottom: 16px;
+    box-shadow: 0 3px 0 rgba(51,48,90,.12);
+  }
+  .modes { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; margin-bottom: 8px; transition: opacity .2s; }
+  .modes.dim { opacity: .35; pointer-events: none; }
+  .modeNote { font-size: 17px; color: var(--soft); min-height: 1.4em; margin-bottom: 12px; }
   .mode {
-    flex: 1 1 200px; max-width: 260px; padding: 18px 10px 14px;
+    flex: 1 1 200px; max-width: 260px; padding: 16px 10px 12px;
     font-size: clamp(22px, 3vw, 30px); background: var(--chip); color: var(--ink);
   }
   .mode.sel { background: var(--blue); color: #fff; }
@@ -74,13 +87,17 @@
   .start { font-size: clamp(32px, 5vw, 44px); padding: 14px 64px; background: var(--green); }
 
   .settings {
-    margin: 28px auto 8px; max-width: 640px; background: var(--card);
+    margin: 24px auto 8px; max-width: 660px; background: var(--card);
     border-radius: 20px; padding: 16px 20px; text-align: left; box-shadow: var(--shadow);
     font-weight: 500;
   }
   .settings h3 { margin: 0 0 6px; font-size: 20px; color: var(--soft); }
   .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 7px 0; font-size: 20px; }
-  .row select { font-size: 18px; padding: 6px 8px; border-radius: 10px; font-family: inherit; color: var(--ink); background: var(--card); border: 2px solid var(--chip); }
+  .row label { min-width: 0; }
+  .row select {
+    font-size: 17px; padding: 6px 8px; border-radius: 10px; font-family: inherit; color: var(--ink);
+    background: var(--card); border: 2px solid var(--chip); max-width: 62%;
+  }
   .row input[type=checkbox] { width: 28px; height: 28px; accent-color: var(--blue); flex: none; }
   .voiceStatus { font-size: 16px; color: var(--soft); line-height: 1.35; min-width: 0; }
   .voiceStatus.ok { color: var(--green); }
@@ -89,58 +106,77 @@
   .tip { font-size: 15px; color: var(--soft); margin: 8px 0 0; line-height: 1.4; }
 
   /* ---------- Làm bài ---------- */
-  #game { display: flex; flex-direction: column; overflow: hidden; }
-  #game[hidden] { display: none !important; }
+  #game { display: flex; flex-direction: column; }
   .topbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; max-width: 980px; width: 100%; margin: 0 auto 8px; }
   .home { background: var(--soft); font-size: 22px; padding: 8px 18px; }
   .progress { font-size: clamp(22px, 3vw, 30px); font-weight: 800; }
+  .rightTop { display: flex; align-items: center; gap: 14px; }
+  .speakBtn { font-size: 26px; line-height: 1; padding: 8px 12px; background: var(--orange); border-radius: 16px; }
   .stars { font-size: clamp(22px, 3vw, 30px); font-weight: 800; color: var(--orange); }
   .stars.bump { animation: bump .5s; }
   @keyframes bump { 0%,100% { transform: scale(1); } 40% { transform: scale(1.6); } }
   .bar { height: 14px; background: #efe5c8; border-radius: 10px; max-width: 980px; width: 100%; margin: 0 auto 12px; overflow: hidden; flex: none; }
   .bar div { height: 100%; width: 0; background: var(--orange); transition: width .3s; }
 
-  .play { flex: 1; min-height: 0; max-width: 980px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .play { flex: 1 0 auto; max-width: 980px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 8px; }
   .problem {
-    position: relative; width: 100%;
-    background: var(--card); border-radius: 30px; box-shadow: var(--shadow);
-    padding: 14px 8px; text-align: center; white-space: nowrap;
-    font-size: min(12vw, 15vh, 140px); font-weight: 800; line-height: 1.1;
+    width: 100%; background: var(--card); border-radius: 30px; box-shadow: var(--shadow);
+    padding: 12px 12px; text-align: center; font-weight: 800;
   }
-  .problem .op { color: var(--purple); margin: 0 .14em; }
-  .speakBtn {
-    position: absolute; top: 10px; right: 10px; font-size: 28px; line-height: 1; padding: 10px 12px;
-    background: var(--orange); border-radius: 16px;
-  }
+  .eqline { width: 100%; white-space: nowrap; overflow: hidden; line-height: 1.12; padding: 6px 0; }
+  .eqline.big { font-size: min(16vw, 15vh, 140px); }
+  .eqline.mid { font-size: min(14vw, 11vh, 110px); }
+  .eqline .op { color: var(--purple); margin: 0 .12em; }
   .answer {
     display: inline-block; min-width: 1.5em; padding: 0 .12em;
     border: 6px dashed var(--blue); border-radius: 26px; color: var(--blue);
-    vertical-align: middle; line-height: 1.1;
+    vertical-align: middle; line-height: 1.08; text-align: center;
   }
+  .answer.sign { min-width: 1.2em; margin: 0 .12em; }
   .answer.ok { border-style: solid; border-color: var(--green); color: var(--green); animation: grow .5s; }
   .answer.bad { border-style: solid; border-color: var(--red); color: var(--red); animation: shake .4s; }
   .answer.reveal { border-style: solid; border-color: var(--orange); color: var(--orange); }
   @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-12px); } 75% { transform: translateX(12px); } }
   @keyframes grow { 0%,100% { transform: scale(1); } 50% { transform: scale(1.2); } }
 
+  .countPic {
+    display: grid; grid-template-columns: repeat(5, auto); justify-content: center;
+    gap: 2px 12px; font-size: min(8.5vw, 8vh, 76px); line-height: 1.15; padding-top: 4px;
+  }
+  .wpText {
+    font-size: clamp(21px, 3.1vw, 34px); font-weight: 700; line-height: 1.35;
+    max-width: 30em; margin: 4px auto 6px; text-wrap: balance;
+  }
+  .wpPic { font-size: clamp(26px, 3.8vw, 42px); line-height: 1.25; }
+  .wpPic .group { display: inline-block; margin: 0 8px; vertical-align: middle; }
+  .wpPic .sign { color: var(--purple); vertical-align: middle; }
+  .gone { opacity: .25; }
+
   .feedback { font-size: clamp(24px, 4vw, 40px); font-weight: 800; min-height: 1.3em; line-height: 1.3; text-align: center; }
   .feedback.ok { color: var(--green); }
   .feedback.bad { color: var(--red); }
   .feedback.info { color: var(--orange); }
 
-  .hint { min-height: 1.3em; font-size: clamp(28px, 4.4vw, 46px); line-height: 1.25; text-align: center; }
+  .hint { min-height: 1.3em; font-size: clamp(26px, 4.2vw, 44px); line-height: 1.25; text-align: center; }
   .hint .group { display: inline-block; margin: 0 10px; vertical-align: middle; }
   .hint .sign { font-weight: 800; color: var(--purple); vertical-align: middle; }
-  .hint .gone { opacity: .25; }
+  .hint .eqHint { font-weight: 800; color: var(--purple); font-size: 1.2em; }
+  .hint .numbered { display: inline-flex; flex-direction: column; align-items: center; margin: 0 4px; line-height: 1; }
+  .hint .numbered b { font-size: .55em; color: var(--blue); margin-top: 2px; }
 
-  .keypad {
-    margin-top: auto; width: 100%; max-width: 820px;
-    display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; padding-bottom: 6px;
-  }
+  .keypad { margin-top: auto; width: 100%; max-width: 820px; display: grid; gap: 12px; padding-bottom: 6px; }
+  #numpad { grid-template-columns: repeat(5, 1fr); }
+  #cmppad { grid-template-columns: repeat(3, 1fr); max-width: 640px; }
   .key { height: min(11vh, 96px); min-height: 60px; font-size: clamp(34px, 5vw, 52px); background: var(--blue); }
   .key.hintbtn { grid-column: span 2; background: var(--purple); font-size: clamp(22px, 3vw, 32px); }
+  #cmppad .key.hintbtn { grid-column: span 3; }
   .key.del { background: var(--orange); font-size: clamp(26px, 4vw, 38px); }
   .key.go { grid-column: span 2; background: var(--green); font-size: clamp(24px, 3.4vw, 36px); }
+  .key.signKey {
+    height: min(14vh, 116px); min-height: 76px; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; line-height: 1; font-size: clamp(44px, 6.5vw, 68px);
+  }
+  .key.signKey .lbl { font-size: clamp(14px, 1.9vw, 19px); font-weight: 700; margin-top: 4px; opacity: .95; }
 
   /* ---------- Hiệu ứng ăn mừng ---------- */
   #fx { position: fixed; inset: 0; pointer-events: none; z-index: 50; overflow: hidden; }
@@ -200,51 +236,50 @@
     .confetti { display: none; }
   }
 </style>
+</head>
+<body>
 
 <div id="fx"></div>
 
 <!-- TRANG CHÍNH -->
 <section id="home" class="screen">
   <div class="center">
-    <h1>Bé Học Toán 🧮</h1>
-    <p class="sub">Chọn phép tính rồi bấm Bắt đầu nhé!</p>
-
-    <div class="modes">
-      <button class="btn mode" id="modeAdd" data-mode="add"><span class="big">➕</span>Phép cộng</button>
-      <button class="btn mode" id="modeSub" data-mode="sub"><span class="big">➖</span>Phép trừ</button>
-      <button class="btn mode" id="modeMix" data-mode="mix"><span class="big">➕➖</span>Cả hai</button>
+    <div class="langToggle">
+      <button class="btn langBtn" id="langVi" data-lang="vi">🇻🇳 Tiếng Việt</button>
+      <button class="btn langBtn" id="langEn" data-lang="en">🇬🇧 English</button>
     </div>
+    <h1 data-t="title">Bé Học Toán 🧮</h1>
+    <p class="sub" data-t="subtitle">Chọn phép tính rồi bấm Bắt đầu nhé!</p>
+    <div class="levelNow" id="levelNow"></div>
 
-    <button class="btn start" id="startBtn">▶ Bắt đầu</button>
+    <div class="modes" id="modes">
+      <button class="btn mode" id="modeAdd" data-mode="add"><span class="big">➕</span><span data-t="add">Phép cộng</span></button>
+      <button class="btn mode" id="modeSub" data-mode="sub"><span class="big">➖</span><span data-t="subtract">Phép trừ</span></button>
+      <button class="btn mode" id="modeMix" data-mode="mix"><span class="big">➕➖</span><span data-t="mix">Cả hai</span></button>
+    </div>
+    <div class="modeNote" id="modeNote"></div>
+
+    <button class="btn start" id="startBtn">▶ <span data-t="start">Bắt đầu</span></button>
 
     <div class="settings">
-      <h3>⚙ Cài đặt cho bố mẹ</h3>
+      <h3>⚙ <span data-t="settings">Cài đặt cho bố mẹ</span></h3>
       <div class="row">
-        <label for="optMax">Phạm vi số</label>
-        <select id="optMax">
-          <option value="5">Trong phạm vi 5</option>
-          <option value="10">Trong phạm vi 10</option>
-          <option value="20">Trong phạm vi 20</option>
-        </select>
+        <label for="optLevel" data-t="levelLabel">Cấp độ</label>
+        <select id="optLevel"></select>
       </div>
       <div class="row">
-        <label for="optCount">Số câu mỗi lượt</label>
-        <select id="optCount">
-          <option value="5">5 câu</option>
-          <option value="10">10 câu</option>
-          <option value="15">15 câu</option>
-          <option value="20">20 câu</option>
-        </select>
+        <label for="optCount" data-t="countLabel">Số câu mỗi lượt</label>
+        <select id="optCount"></select>
       </div>
-      <div class="row"><label for="optHint">Luôn hiện hình để đếm</label><input type="checkbox" id="optHint"></div>
-      <div class="row"><label for="optSound">Nhạc và tiếng vỗ tay</label><input type="checkbox" id="optSound"></div>
-      <div class="row"><label for="optVoice">Giọng nói khen (tiếng Việt)</label><input type="checkbox" id="optVoice"></div>
-      <div class="row"><label for="optReadQ">Đọc to đề bài</label><input type="checkbox" id="optReadQ"></div>
+      <div class="row"><label for="optHint" data-t="alwaysHint">Luôn hiện hình để đếm</label><input type="checkbox" id="optHint"></div>
+      <div class="row"><label for="optSound" data-t="soundLabel">Nhạc và tiếng vỗ tay</label><input type="checkbox" id="optSound"></div>
+      <div class="row"><label for="optVoice" data-t="voiceLabel">Giọng nói khen</label><input type="checkbox" id="optVoice"></div>
+      <div class="row"><label for="optReadQ" data-t="readQLabel">Đọc to đề bài</label><input type="checkbox" id="optReadQ"></div>
       <div class="row">
-        <span class="voiceStatus" id="voiceStatus">Đang tìm giọng tiếng Việt…</span>
-        <button class="btn testBtn" id="testVoice">🔊 Nghe thử</button>
+        <span class="voiceStatus" id="voiceStatus"></span>
+        <button class="btn testBtn" id="testVoice">🔊 <span data-t="test">Nghe thử</span></button>
       </div>
-      <p class="tip">Trên iPad: tắt chế độ Im lặng (biểu tượng chuông trong Trung tâm điều khiển) để nghe được nhạc và giọng nói.</p>
+      <p class="tip" data-t="tip"></p>
     </div>
   </div>
 </section>
@@ -252,24 +287,30 @@
 <!-- LÀM BÀI -->
 <section id="game" class="screen" hidden>
   <div class="topbar">
-    <button class="btn home" id="homeBtn">🏠 Về</button>
-    <div class="progress" id="progress">Câu 1/10</div>
-    <div class="stars" id="stars">⭐ 0</div>
+    <button class="btn home" id="homeBtn">🏠 <span data-t="home">Về</span></button>
+    <div class="progress" id="progress"></div>
+    <div class="rightTop">
+      <button class="btn speakBtn" id="speakBtn" aria-label="Đọc lại đề">🔊</button>
+      <div class="stars" id="stars">⭐ 0</div>
+    </div>
   </div>
   <div class="bar"><div id="barFill"></div></div>
 
   <div class="play">
-    <div class="problem">
-      <button class="btn speakBtn" id="speakBtn" aria-label="Đọc lại đề">🔊</button>
-      <span id="numA">3</span><span class="op" id="opSign">+</span><span id="numB">4</span><span class="op">=</span><span class="answer" id="answer">&nbsp;</span>
-    </div>
+    <div class="problem" id="problem"></div>
     <div class="feedback" id="feedback"></div>
     <div class="hint" id="hint"></div>
 
-    <div class="keypad" id="keypad">
+    <div class="keypad" id="numpad">
       <button class="btn key" data-k="1">1</button><button class="btn key" data-k="2">2</button><button class="btn key" data-k="3">3</button><button class="btn key" data-k="4">4</button><button class="btn key" data-k="5">5</button>
       <button class="btn key" data-k="6">6</button><button class="btn key" data-k="7">7</button><button class="btn key" data-k="8">8</button><button class="btn key" data-k="9">9</button><button class="btn key" data-k="0">0</button>
-      <button class="btn key hintbtn" data-k="hint">💡 Gợi ý</button><button class="btn key del" data-k="del" aria-label="Xoá">⌫</button><button class="btn key go" data-k="enter">✔ Xong</button>
+      <button class="btn key hintbtn" data-k="hint">💡 <span data-t="hint">Gợi ý</span></button><button class="btn key del" data-k="del" aria-label="Xoá">⌫</button><button class="btn key go" data-k="enter">✔ <span data-t="done">Xong</span></button>
+    </div>
+    <div class="keypad" id="cmppad" hidden>
+      <button class="btn key signKey" data-k="&gt;">&gt;<span class="lbl" data-t="gt">lớn hơn</span></button>
+      <button class="btn key signKey" data-k="&lt;">&lt;<span class="lbl" data-t="lt">bé hơn</span></button>
+      <button class="btn key signKey" data-k="=">=<span class="lbl" data-t="eqWord">bằng</span></button>
+      <button class="btn key hintbtn" data-k="hint">💡 <span data-t="hint">Gợi ý</span></button>
     </div>
   </div>
 </section>
@@ -277,13 +318,13 @@
 <!-- KẾT QUẢ -->
 <section id="end" class="screen" hidden>
   <div class="center">
-    <h1 id="endTitle">Giỏi quá! 🎉</h1>
-    <div class="result" id="endResult">Con làm đúng 8/10 câu</div>
+    <h1 id="endTitle"></h1>
+    <div class="result" id="endResult"></div>
     <div class="bigstars" id="endStars"></div>
     <div class="mistakes" id="endMistakes"></div>
     <div class="endBtns">
-      <button class="btn again" id="againBtn">🔁 Chơi lại</button>
-      <button class="btn back" id="backBtn">🏠 Trang chính</button>
+      <button class="btn again" id="againBtn">🔁 <span data-t="again">Chơi lại</span></button>
+      <button class="btn back" id="backBtn">🏠 <span data-t="back">Trang chính</span></button>
     </div>
   </div>
 </section>
@@ -292,13 +333,105 @@
 (function () {
   "use strict";
 
+  // ================= CẤP ĐỘ =================
+  var LEVELS = [
+    { id: "count",   vi: "Đếm hình (đến 10)",                    en: "Count the pictures (to 10)" },
+    { id: "r5",      vi: "Cộng trừ trong phạm vi 5",             en: "Add & subtract within 5" },
+    { id: "r10",     vi: "Cộng trừ trong phạm vi 10",            en: "Add & subtract within 10" },
+    { id: "r20",     vi: "Cộng trừ trong phạm vi 20",            en: "Add & subtract within 20" },
+    { id: "missing", vi: "Tìm số còn thiếu (3 + ? = 9)",         en: "Find the missing number (3 + ? = 9)" },
+    { id: "cmp",     vi: "So sánh >, <, =",                      en: "Compare >, <, =" },
+    { id: "three",   vi: "Phép tính 3 số (2 + 3 + 4)",           en: "Three numbers (2 + 3 + 4)" },
+    { id: "tens",    vi: "Số tròn chục (20 + 30)",               en: "Tens (20 + 30)" },
+    { id: "r100",    vi: "Cộng trừ không nhớ trong phạm vi 100", en: "Add & subtract within 100, no carrying" },
+    { id: "word",    vi: "Toán có lời văn",                      en: "Word problems" }
+  ];
+  function levelIndex(id) { for (var i = 0; i < LEVELS.length; i++) if (LEVELS[i].id === id) return i; return -1; }
+
+  // ================= CÀI ĐẶT =================
   var STORE_KEY = "be-hoc-toan-settings";
-  var settings = { mode: "add", max: 10, count: 10, hint: false, sound: true, voice: true, readQ: true };
+  var settings = { mode: "add", level: "r10", count: 10, hint: false, sound: true, voice: true, readQ: true, lang: "vi" };
   try {
     var saved = JSON.parse(localStorage.getItem(STORE_KEY) || "null");
-    if (saved) { for (var k in saved) { if (Object.prototype.hasOwnProperty.call(saved, k)) settings[k] = saved[k]; } }
+    if (saved) {
+      for (var k in saved) { if (Object.prototype.hasOwnProperty.call(saved, k)) settings[k] = saved[k]; }
+      if (!saved.level && saved.max) settings.level = saved.max == 5 ? "r5" : saved.max == 20 ? "r20" : "r10";
+    }
   } catch (e) {}
+  if (levelIndex(settings.level) < 0) settings.level = "r10";
+  if (settings.lang !== "en") settings.lang = "vi";
   function saveSettings() { try { localStorage.setItem(STORE_KEY, JSON.stringify(settings)); } catch (e) {} }
+
+  // ================= CHỮ HAI NGÔN NGỮ =================
+  var T = {
+    vi: {
+      title: "Bé Học Toán 🧮", subtitle: "Chọn phép tính rồi bấm Bắt đầu nhé!",
+      add: "Phép cộng", subtract: "Phép trừ", mix: "Cả hai", start: "Bắt đầu",
+      settings: "Cài đặt cho bố mẹ", levelLabel: "Cấp độ", countLabel: "Số câu mỗi lượt", qUnit: "câu",
+      alwaysHint: "Luôn hiện hình để đếm", soundLabel: "Nhạc và tiếng vỗ tay",
+      voiceLabel: "Giọng nói khen", readQLabel: "Đọc to đề bài", test: "Nghe thử",
+      tip: "Trên iPad/iPhone: tắt chế độ Im lặng để nghe được nhạc và giọng nói.",
+      home: "Về", qLabel: "Câu", hint: "Gợi ý", done: "Xong", again: "Chơi lại", back: "Trang chính",
+      gt: "lớn hơn", lt: "bé hơn", eqWord: "bằng",
+      levelPrefix: "Cấp ", modeNoteCount: "Dạng Đếm hình không cần chọn phép tính.",
+      typeNum: "Con bấm số vào ô trống nhé 😊", wrong1: "Chưa đúng rồi, con thử lại nhé!",
+      nextTime: "Lần sau con làm được nhé!", answerIs: "Đáp án là ",
+      review: "Ôn lại: ", result: function (c, t) { return "Con làm đúng " + c + "/" + t + " câu"; },
+      titles: ["Xuất sắc! 🏆", "Giỏi quá! 🎉", "Cố lên nào! 💪", "Mình luyện thêm nhé! 🌱"],
+      endSay: [
+        function (c, t) { return "Xuất sắc! Con làm đúng hết " + t + " câu! Con giỏi quá!"; },
+        function (c, t) { return "Giỏi quá! Con làm đúng " + c + " trên " + t + " câu!"; },
+        function (c, t) { return "Con làm đúng " + c + " trên " + t + " câu. Cố lên con nhé!"; },
+        function (c, t) { return "Con làm đúng " + c + " câu. Mình luyện thêm nhé, con sẽ giỏi hơn!"; }
+      ],
+      praise: ["Đúng rồi! Con giỏi lắm!", "Con làm đúng rồi! Hoan hô con!", "Tuyệt vời! Con giỏi quá!",
+               "Chính xác! Con thông minh quá!", "Đúng rồi! Con làm tốt lắm!", "Giỏi quá! Con tính nhanh ghê!"],
+      streak: function (n) { return "Con đúng " + n + " câu liền rồi! Siêu quá!"; },
+      plus: "cộng", minus: "trừ", equals: "bằng", what: "mấy",
+      cmpAsk: "Con chọn: lớn hơn, bé hơn, hay bằng?", cmpWith: ", so với ",
+      cmpSay: { ">": "lớn hơn", "<": "bé hơn", "=": "bằng" },
+      howMany: function (it) { return "Có mấy " + it.vi + "?"; },
+      thereAre: function (n, it) { return "Có " + n + " " + it.vi + "."; },
+      voiceUsing: "✔ Đang dùng giọng: ",
+      voiceMissing: "Chưa có giọng tiếng Việt. iPad/iPhone: Cài đặt → Trợ năng → Nội dung được đọc → Giọng nói → Tiếng Việt. Windows: Settings → Time & Language → Language → thêm Tiếng Việt kèm gói giọng nói.",
+      voiceCheck: "Bấm Nghe thử để kiểm tra giọng nói.", noSynth: "Thiết bị này không hỗ trợ giọng nói.",
+      testPhrase: "Đúng rồi! Con giỏi lắm!"
+    },
+    en: {
+      title: "Fun Math 🧮", subtitle: "Pick a sign, then tap Start!",
+      add: "Addition", subtract: "Subtraction", mix: "Both", start: "Start",
+      settings: "Settings for parents", levelLabel: "Level", countLabel: "Questions per round", qUnit: "questions",
+      alwaysHint: "Always show counting pictures", soundLabel: "Music and clapping",
+      voiceLabel: "Voice praise", readQLabel: "Read questions aloud", test: "Test voice",
+      tip: "On iPad/iPhone: turn off Silent mode to hear the music and the voice.",
+      home: "Home", qLabel: "Question", hint: "Hint", done: "Done", again: "Play again", back: "Home",
+      gt: "greater", lt: "less", eqWord: "equal",
+      levelPrefix: "Level ", modeNoteCount: "Counting does not need a sign.",
+      typeNum: "Tap a number to fill the box 😊", wrong1: "Not quite. Let's try again!",
+      nextTime: "You'll get it next time!", answerIs: "The answer is ",
+      review: "Review: ", result: function (c, t) { return "You got " + c + " out of " + t + " right"; },
+      titles: ["Excellent! 🏆", "Great job! 🎉", "Keep going! 💪", "Let's practice more! 🌱"],
+      endSay: [
+        function (c, t) { return "Excellent! You got all " + t + " right! Amazing!"; },
+        function (c, t) { return "Great job! You got " + c + " out of " + t + "!"; },
+        function (c, t) { return "You got " + c + " out of " + t + ". Keep trying!"; },
+        function (c, t) { return "You got " + c + " right. Let's practice more!"; }
+      ],
+      praise: ["Correct! Great job!", "Well done! You did it!", "Awesome! You're so smart!",
+               "Yes! That's right!", "Super! Keep going!", "Wow! You're so fast!"],
+      streak: function (n) { return n + " in a row! You're a star!"; },
+      plus: "plus", minus: "minus", equals: "equals", what: "what",
+      cmpAsk: "Is it greater than, less than, or equal?", cmpWith: ", compared to ",
+      cmpSay: { ">": "is greater than", "<": "is less than", "=": "equals" },
+      howMany: function (it) { return "How many " + it.en + "?"; },
+      thereAre: function (n, it) { return n === 1 ? "There is 1 " + it.en1 + "." : "There are " + n + " " + it.en + "."; },
+      voiceUsing: "✔ Using voice: ",
+      voiceMissing: "No English voice found. Check the speech or voice settings on this device.",
+      voiceCheck: "Tap Test voice to check the voice.", noSynth: "This device does not support voices.",
+      testPhrase: "Correct! Great job!"
+    }
+  };
+  function t(key) { return T[settings.lang][key]; }
 
   var $ = function (id) { return document.getElementById(id); };
   function rnd(lo, hi) { return lo + Math.floor(Math.random() * (hi - lo + 1)); }
@@ -313,7 +446,6 @@
         var AC = window.AudioContext || window.webkitAudioContext;
         if (!AC) return null;
         audioCtx = new AC();
-        // Mở khoá âm thanh trên iPad bằng một tiếng câm rất ngắn
         var b = audioCtx.createBuffer(1, 1, 22050), s = audioCtx.createBufferSource();
         s.buffer = b; s.connect(audioCtx.destination); s.start(0);
       }
@@ -326,12 +458,12 @@
     var ctx = ensureAudio(); if (!ctx) return;
     var o = ctx.createOscillator(), g = ctx.createGain();
     o.type = type || "triangle"; o.frequency.value = freq;
-    var t = ctx.currentTime + start;
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(vol || 0.18, t + 0.02);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    var tt = ctx.currentTime + start;
+    g.gain.setValueAtTime(0.0001, tt);
+    g.gain.exponentialRampToValueAtTime(vol || 0.18, tt + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, tt + dur);
     o.connect(g); g.connect(ctx.destination);
-    o.start(t); o.stop(t + dur + 0.05);
+    o.start(tt); o.stop(tt + dur + 0.05);
   }
   function applause(start, dur, vol) {
     if (!settings.sound) return;
@@ -347,13 +479,13 @@
     }
     var src = ctx.createBufferSource(); src.buffer = buf;
     var bp = ctx.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 1600; bp.Q.value = 0.6;
-    var g = ctx.createGain(), t = ctx.currentTime + start, v = vol || 0.35;
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(v, t + 0.15);
-    g.gain.setValueAtTime(v, t + dur * 0.6);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    var g = ctx.createGain(), tt = ctx.currentTime + start, v = vol || 0.35;
+    g.gain.setValueAtTime(0.0001, tt);
+    g.gain.exponentialRampToValueAtTime(v, tt + 0.15);
+    g.gain.setValueAtTime(v, tt + dur * 0.6);
+    g.gain.exponentialRampToValueAtTime(0.0001, tt + dur);
     src.connect(bp); bp.connect(g); g.connect(ctx.destination);
-    src.start(t);
+    src.start(tt);
   }
   var JINGLES = [
     [[523,0],[659,.12],[784,.24],[1047,.36],[784,.52],[1047,.64]],
@@ -371,42 +503,46 @@
   function soundWrong() { note(440, 0, .3, "sine", .14); note(392, .25, .3, "sine", .14); note(330, .5, .55, "sine", .14); }
   function soundTap() { note(880, 0, .06, "sine", .06); }
   function soundWin() {
-    var m = [523,523,523,659,784,659,784,1047], t = [0,.15,.3,.45,.7,.9,1.05,1.3];
-    for (var i = 0; i < m.length; i++) note(m[i], t[i], .25, "triangle", .17);
+    var m = [523,523,523,659,784,659,784,1047], tm = [0,.15,.3,.45,.7,.9,1.05,1.3];
+    for (var i = 0; i < m.length; i++) note(m[i], tm[i], .25, "triangle", .17);
     note(1047, 1.3, 1.4, "triangle", .12); note(1319, 1.3, 1.4, "triangle", .08); note(1568, 1.3, 1.4, "triangle", .08);
     applause(.3, 3.5, .38);
   }
 
-  // ================= GIỌNG NÓI TIẾNG VIỆT =================
-  // iPad có sẵn giọng "Linh" (không cần mạng). Máy tính dùng giọng của Windows / Edge.
-  var synth = window.speechSynthesis || null, viVoice = null, speechUnlocked = false;
+  // ================= GIỌNG NÓI =================
+  var synth = window.speechSynthesis || null, voices = { vi: null, en: null }, speechUnlocked = false;
   function setVoiceStatus(text, cls) { var el = $("voiceStatus"); el.textContent = text; el.className = "voiceStatus " + (cls || ""); }
+  function scoreVoice(v, lang) {
+    var l = (v.lang || "").toLowerCase().replace("_", "-");
+    if (l.indexOf(lang) !== 0) return -1;
+    var s = 1;
+    if (/natural|online|enhanced|premium|neural/i.test(v.name)) s += 3;
+    if (lang === "vi" && /linh|hoaimy/i.test(v.name)) s += 1;
+    if (lang === "en") {
+      if (l.indexOf("en-us") === 0) s += 2;
+      if (/samantha|aria|jenny|ava|google us/i.test(v.name)) s += 1;
+    }
+    if (v.localService) s += 1;
+    return s;
+  }
   function pickVoice() {
-    if (!synth) { setVoiceStatus("Thiết bị này không hỗ trợ giọng nói.", "warn"); return; }
+    if (!synth) { setVoiceStatus(t("noSynth"), "warn"); return; }
     var vs = [];
     try { vs = synth.getVoices() || []; } catch (e) {}
-    var best = null, bestScore = -1;
-    for (var i = 0; i < vs.length; i++) {
-      var v = vs[i];
-      if (!/^vi/i.test(v.lang || "")) continue;
-      var s = 1;
-      if (/natural|online|enhanced|premium/i.test(v.name)) s += 3;
-      if (/linh|hoaimy/i.test(v.name)) s += 1;
-      if (v.localService) s += 1;
-      if (s > bestScore) { best = v; bestScore = s; }
-    }
-    viVoice = best;
-    if (viVoice) setVoiceStatus("✔ Đang dùng giọng: " + viVoice.name, "ok");
-    else if (vs.length) setVoiceStatus("Chưa có giọng tiếng Việt trên thiết bị này. Trên iPad: Cài đặt → Trợ năng → Nội dung được đọc → Giọng nói → Tiếng Việt.", "warn");
-    else setVoiceStatus("Bấm Nghe thử để kiểm tra giọng nói.", "");
+    ["vi", "en"].forEach(function (lang) {
+      var best = null, bs = 0;
+      for (var i = 0; i < vs.length; i++) { var s = scoreVoice(vs[i], lang); if (s > bs) { bs = s; best = vs[i]; } }
+      voices[lang] = best;
+    });
+    var v = voices[settings.lang];
+    if (v) setVoiceStatus(t("voiceUsing") + v.name, "ok");
+    else if (vs.length) setVoiceStatus(t("voiceMissing"), "warn");
+    else setVoiceStatus(t("voiceCheck"), "");
   }
   if (synth) {
-    pickVoice();
     try { synth.onvoiceschanged = pickVoice; } catch (e) {}
     setTimeout(pickVoice, 800); setTimeout(pickVoice, 2500);
-  } else pickVoice();
-
-  // Gọi trong lúc bé chạm màn hình để iPad cho phép nói về sau
+  }
   function unlockSpeech() {
     if (!synth || speechUnlocked) return;
     try { var u = new SpeechSynthesisUtterance(" "); u.volume = 0; synth.speak(u); speechUnlocked = true; } catch (e) {}
@@ -414,17 +550,18 @@
   function speak(text, done) {
     var finished = false;
     function fin() { if (!finished) { finished = true; if (done) done(); } }
-    if (!viVoice) pickVoice();
+    if (!voices[settings.lang]) pickVoice();
     if (!synth || !settings.voice) { fin(); return; }
     try {
       synth.cancel();
+      var v = voices[settings.lang];
       var u = new SpeechSynthesisUtterance(text);
-      if (viVoice) u.voice = viVoice;
-      u.lang = viVoice ? viVoice.lang : "vi-VN";
-      u.rate = 0.95; u.pitch = 1.1; u.volume = 1;
+      if (v) u.voice = v;
+      u.lang = v ? v.lang : (settings.lang === "en" ? "en-US" : "vi-VN");
+      u.rate = settings.lang === "en" ? 0.9 : 0.95; u.pitch = 1.1; u.volume = 1;
       u.onend = fin; u.onerror = fin;
       synth.speak(u);
-      setTimeout(fin, 7000);
+      setTimeout(fin, 9000);
     } catch (e) { fin(); }
   }
   function stopSpeak() { try { if (synth) synth.cancel(); } catch (e) {} }
@@ -435,7 +572,7 @@
     var fx = $("fx"); fx.innerHTML = "";
     var b = document.createElement("div");
     b.className = "burst" + (big === false ? " small" : ""); b.textContent = emoji; fx.appendChild(b);
-    if (text) { var t = document.createElement("div"); t.className = "burstText"; t.textContent = text; fx.appendChild(t); }
+    if (text) { var tx = document.createElement("div"); tx.className = "burstText"; tx.textContent = text; fx.appendChild(tx); }
     if (big !== false) confetti(45, ["⭐", "🎉", "✨"]);
     setTimeout(function () { if (b.parentNode) fx.innerHTML = ""; }, 2000);
   }
@@ -463,105 +600,290 @@
       var b = modeBtns[i];
       b.className = "btn mode" + (b.getAttribute("data-mode") === settings.mode ? " sel" : "");
     }
+    var isCount = settings.level === "count";
+    $("modes").className = "modes" + (isCount ? " dim" : "");
+    $("modeNote").textContent = isCount ? t("modeNoteCount") : "";
+    var li = levelIndex(settings.level);
+    $("levelNow").textContent = t("levelPrefix") + (li + 1) + ": " + LEVELS[li][settings.lang];
+  }
+  function buildSelects() {
+    var sel = $("optLevel"); sel.innerHTML = "";
+    LEVELS.forEach(function (lv, i) {
+      var o = document.createElement("option"); o.value = lv.id; o.textContent = (i + 1) + ". " + lv[settings.lang]; sel.appendChild(o);
+    });
+    sel.value = settings.level;
+    var cs = $("optCount"); cs.innerHTML = "";
+    [5, 10, 15, 20].forEach(function (n) {
+      var o = document.createElement("option"); o.value = String(n); o.textContent = n + " " + t("qUnit"); cs.appendChild(o);
+    });
+    cs.value = String(settings.count);
+  }
+  function applyLang() {
+    document.documentElement.lang = settings.lang;
+    var nodes = document.querySelectorAll("[data-t]");
+    for (var i = 0; i < nodes.length; i++) { var v = t(nodes[i].getAttribute("data-t")); if (typeof v === "string") nodes[i].textContent = v; }
+    $("langVi").className = "btn langBtn" + (settings.lang === "vi" ? " sel" : "");
+    $("langEn").className = "btn langBtn" + (settings.lang === "en" ? " sel" : "");
+    buildSelects(); renderModes(); pickVoice();
   }
   for (var i = 0; i < modeBtns.length; i++) {
     modeBtns[i].addEventListener("click", function () { ensureAudio(); settings.mode = this.getAttribute("data-mode"); saveSettings(); renderModes(); soundTap(); });
   }
+  ["langVi", "langEn"].forEach(function (id) {
+    $(id).addEventListener("click", function () { ensureAudio(); settings.lang = this.getAttribute("data-lang"); saveSettings(); applyLang(); soundTap(); });
+  });
   function bindCheck(id, key) { $(id).checked = !!settings[key]; $(id).addEventListener("change", function () { settings[key] = this.checked; saveSettings(); }); }
-  $("optMax").value = String(settings.max);
-  $("optCount").value = String(settings.count);
-  $("optMax").addEventListener("change", function () { settings.max = parseInt(this.value, 10); saveSettings(); });
+  $("optLevel").addEventListener("change", function () { settings.level = this.value; saveSettings(); renderModes(); });
   $("optCount").addEventListener("change", function () { settings.count = parseInt(this.value, 10); saveSettings(); });
   bindCheck("optHint", "hint"); bindCheck("optSound", "sound"); bindCheck("optVoice", "voice"); bindCheck("optReadQ", "readQ");
   $("testVoice").addEventListener("click", function () {
     ensureAudio(); pickVoice();
     var old = settings.voice; settings.voice = true;
-    speak("Đúng rồi! Con giỏi lắm!", function () { pickVoice(); });
+    speak(t("testPhrase"), function () { pickVoice(); });
     settings.voice = old; speechUnlocked = true;
   });
-  renderModes();
+  applyLang();
 
   // ================= TẠO ĐỀ =================
-  function makeQuestion(prevKey) {
-    var q = null, tries = 0;
+  var EMOJI = ["🍎", "⭐", "🐟", "🌸", "🍓", "🎈", "🐥", "🍊", "🚗", "🐞"];
+  var ITEMS = [
+    { e: "🍎", vi: "quả táo", en: "apples", en1: "apple", subVi: "Bé ăn mất {b} quả táo.", subEn: "You eat {b}." },
+    { e: "🍬", vi: "cái kẹo", en: "candies", en1: "candy", subVi: "Bé cho bạn {b} cái kẹo.", subEn: "You give {b} to a friend." },
+    { e: "🎈", vi: "quả bóng bay", en: "balloons", en1: "balloon", subVi: "{b} quả bóng bay bị bay mất.", subEn: "{b} fly away." },
+    { e: "🐟", vi: "con cá", en: "fish", en1: "fish", subVi: "{b} con cá bơi đi mất.", subEn: "{b} swim away." },
+    { e: "🌸", vi: "bông hoa", en: "flowers", en1: "flower", subVi: "Bé tặng mẹ {b} bông hoa.", subEn: "You give {b} to Mom." },
+    { e: "🚗", vi: "chiếc ô tô đồ chơi", en: "toy cars", en1: "toy car", subVi: "Bé cho em {b} chiếc ô tô.", subEn: "You give {b} to your little brother." },
+    { e: "🐥", vi: "chú gà con", en: "chicks", en1: "chick", subVi: "{b} chú gà con chạy đi chơi.", subEn: "{b} run away to play." },
+    { e: "🍓", vi: "quả dâu", en: "strawberries", en1: "strawberry", subVi: "Bé ăn mất {b} quả dâu.", subEn: "You eat {b}." }
+  ];
+  var GIVERS = { vi: ["Mẹ", "Bố", "Bà", "Ông"], en: ["Mom", "Dad", "Grandma", "Grandpa"] };
+
+  function opPick() { return settings.mode === "mix" ? (Math.random() < .5 ? "+" : "−") : (settings.mode === "sub" ? "−" : "+"); }
+  function ap(x, op, y) { return op === "+" ? x + y : x - y; }
+  function basic(max, noZero) {
+    var r = null, tries = 0;
     do {
-      var op = settings.mode === "mix" ? (Math.random() < .5 ? "+" : "-") : (settings.mode === "add" ? "+" : "-");
-      var max = settings.max, a, b;
-      if (op === "+") { a = rnd(0, max); b = rnd(0, max - a); } else { a = rnd(1, max); b = rnd(0, a); }
       tries++;
-      if ((a === 0 || b === 0) && Math.random() < .75 && tries < 50) continue;
-      q = { a: a, b: b, op: op, ans: op === "+" ? a + b : a - b, key: a + op + b };
-    } while ((!q || q.key === prevKey) && tries < 50);
+      var op = opPick(), a, b;
+      if (op === "+") { a = rnd(0, max); b = rnd(0, max - a); } else { a = rnd(1, max); b = rnd(0, a); }
+      r = { a: a, b: b, op: op, ans: ap(a, op, b) };
+      var zero = a === 0 || b === 0;
+      if (zero && (noZero || Math.random() < .75)) continue;
+      break;
+    } while (tries < 80);
+    return r;
+  }
+
+  // Hình minh hoạ
+  function grp(n, e) { return '<span class="group">' + (n ? repeat(e, n) : "∅") + "</span>"; }
+  function sgn(s) { return '<span class="sign">' + s + "</span>"; }
+  function sumPic(a, op, b, e) {
+    if (op === "+") return grp(a, e) + sgn("+") + grp(b, e);
+    return '<span class="group">' + repeat(e, a - b) + (b ? '<span class="gone">' + repeat(e, b) + "</span>" : "") + (a === 0 ? "∅" : "") + "</span>";
+  }
+  function tensBlock(tn, un) { return '<span class="group">' + repeat("🔟", tn) + (un ? " " + repeat("🟡", un) : "") + (tn + un === 0 ? "∅" : "") + "</span>"; }
+  function tensPic(a, op, b) {
+    var ta = Math.floor(a / 10), ua = a % 10, tb = Math.floor(b / 10), ub = b % 10;
+    if (op === "+") return tensBlock(ta, ua) + sgn("+") + tensBlock(tb, ub);
+    return '<span class="group">' + repeat("🔟", ta - tb) + (tb ? '<span class="gone">' + repeat("🔟", tb) + "</span>" : "") +
+      (ua ? " " + repeat("🟡", ua - ub) + (ub ? '<span class="gone">' + repeat("🟡", ub) + "</span>" : "") : "") + "</span>";
+  }
+
+  // Đọc phép tính thành lời
+  function word(tok) { return tok === "+" ? t("plus") : tok === "−" ? t("minus") : tok === "=" ? t("equals") : String(tok); }
+  function sayTokens(tokens, blank) {
+    return tokens.map(function (tok, i) { return i === blank ? t("what") : word(tok); }).join(" ") + "?";
+  }
+  function sayFull(tokens) { return tokens.map(word).join(" ") + "."; }
+  function fullText(tokens) { return tokens.join(" "); }
+
+  function eqQ(tokens, blank, hint) {
+    return {
+      display: "eq", kind: "num", tokens: tokens, blank: blank, ans: tokens[blank], hint: hint,
+      speakQ: sayTokens(tokens, blank), speakAns: sayFull(tokens), full: fullText(tokens),
+      key: tokens.join("") + "|" + blank
+    };
+  }
+
+  var GEN = {
+    r5: function () { var b = basic(5), e = pick(EMOJI); return eqQ([b.a, b.op, b.b, "=", b.ans], 4, sumPic(b.a, b.op, b.b, e)); },
+    r10: function () { var b = basic(10), e = pick(EMOJI); return eqQ([b.a, b.op, b.b, "=", b.ans], 4, sumPic(b.a, b.op, b.b, e)); },
+    r20: function () { var b = basic(20), e = pick(EMOJI); return eqQ([b.a, b.op, b.b, "=", b.ans], 4, sumPic(b.a, b.op, b.b, e)); },
+    missing: function () {
+      var b = basic(10, true), e = pick(EMOJI);
+      return eqQ([b.a, b.op, b.b, "=", b.ans], Math.random() < .5 ? 0 : 2, sumPic(b.a, b.op, b.b, e));
+    },
+    cmp: function () {
+      var b = basic(10), e = pick(EMOJI), v = b.ans, c;
+      if (Math.random() < .34) c = v;
+      else {
+        var d = rnd(1, 2) * (Math.random() < .5 ? -1 : 1);
+        c = v + d; if (c < 0) c = v + Math.abs(d); if (c > 10) c = v - Math.abs(d);
+      }
+      var sign = v > c ? ">" : v < c ? "<" : "=";
+      var left = [b.a, b.op, b.b];
+      var say = left.map(word).join(" ");
+      return {
+        display: "eq", kind: "cmp", tokens: [b.a, b.op, b.b, sign, c], blank: 3, ans: sign,
+        hint: sumPic(b.a, b.op, b.b, e) + sgn("?") + grp(c, e),
+        speakQ: say + t("cmpWith") + c + ". " + t("cmpAsk"),
+        speakAns: say + " " + t("cmpSay")[sign] + " " + c + ".",
+        full: b.a + " " + b.op + " " + b.b + " " + sign + " " + c,
+        key: "c" + b.a + b.op + b.b + "|" + c
+      };
+    },
+    three: function () {
+      var ops = settings.mode === "add" ? ["+", "+"] : settings.mode === "sub" ? ["−", "−"] : pick([["+", "−"], ["−", "+"], ["+", "+"], ["−", "−"]]);
+      var a = 1, b = 2, c = 3, v = 6;
+      for (var tries = 0; tries < 400; tries++) {
+        var x = rnd(1, 9), y = rnd(1, 9), z = rnd(1, 9);
+        var v1 = ap(x, ops[0], y); if (v1 < 0 || v1 > 10) continue;
+        var v2 = ap(v1, ops[1], z); if (v2 < 0 || v2 > 10) continue;
+        a = x; b = y; c = z; v = v2; break;
+      }
+      if (tries >= 400) ops = ["+", "+"];
+      var e = pick(EMOJI);
+      return eqQ([a, ops[0], b, ops[1], c, "=", v], 6, grp(a, e) + sgn(ops[0]) + grp(b, e) + sgn(ops[1]) + grp(c, e));
+    },
+    tens: function () {
+      var op = opPick(), a, b;
+      if (op === "+") { a = rnd(1, 9) * 10; b = rnd(1, (100 - a) / 10) * 10; }
+      else { a = rnd(2, 10) * 10; b = rnd(1, a / 10 - 1) * 10; }
+      return eqQ([a, op, b, "=", ap(a, op, b)], 4, tensPic(a, op, b));
+    },
+    r100: function () {
+      var op = opPick(), a = 0, b = 0;
+      for (var tries = 0; tries < 200; tries++) {
+        var oneDigit = Math.random() < .4, ta, ua, tb, ub;
+        if (op === "+") {
+          ta = rnd(1, 8); ua = rnd(0, 8);
+          if (oneDigit) { tb = 0; ub = rnd(1, 9 - ua); } else { tb = rnd(1, 9 - ta); ub = rnd(0, 9 - ua); }
+        } else {
+          ta = rnd(1, 9); ua = rnd(1, 9);
+          if (oneDigit) { tb = 0; ub = rnd(1, ua); } else { tb = rnd(1, ta); ub = rnd(0, ua); }
+        }
+        a = ta * 10 + ua; b = tb * 10 + ub;
+        if (a < 10 || b === 0 || (op === "−" && a === b)) continue;
+        break;
+      }
+      return eqQ([a, op, b, "=", ap(a, op, b)], 4, tensPic(a, op, b));
+    },
+    count: function () {
+      var n = rnd(1, 10); if (n < 3 && Math.random() < .6) n = rnd(3, 10);
+      var it = pick(ITEMS), cells = "", numbered = "";
+      for (var i = 0; i < n; i++) { cells += "<span>" + it.e + "</span>"; numbered += '<span class="numbered">' + it.e + "<b>" + (i + 1) + "</b></span>"; }
+      return {
+        display: "count", kind: "num", ans: n, pic: cells, hint: numbered,
+        speakQ: t("howMany")(it), speakAns: t("thereAre")(n, it), full: it.e + " = " + n,
+        key: "n" + n + it.e
+      };
+    },
+    word: function () {
+      var b; do { b = basic(10, true); } while (b.a < 2);
+      var it = pick(ITEMS), L = settings.lang, text;
+      if (b.op === "+") {
+        var gv = pick(GIVERS[L]);
+        text = L === "vi"
+          ? "Có " + b.a + " " + it.vi + ". " + gv + " cho thêm " + b.b + " " + it.vi + ". Hỏi có tất cả mấy " + it.vi + "?"
+          : "There are " + b.a + " " + it.en + ". " + gv + " gives you " + b.b + " more. How many " + it.en + " are there in all?";
+      } else {
+        text = L === "vi"
+          ? "Có " + b.a + " " + it.vi + ". " + it.subVi.replace("{b}", b.b) + " Hỏi còn lại mấy " + it.vi + "?"
+          : "There are " + b.a + " " + it.en + ". " + it.subEn.replace("{b}", b.b) + " How many " + it.en + " are left?";
+      }
+      var tokens = [b.a, b.op, b.b, "=", b.ans];
+      return {
+        display: "word", kind: "num", ans: b.ans, text: text, pic: sumPic(b.a, b.op, b.b, it.e),
+        hint: '<span class="eqHint">' + b.a + " " + b.op + " " + b.b + " = ?</span>",
+        speakQ: text, speakAns: t("answerIs") + b.ans + ". " + sayFull(tokens), full: fullText(tokens),
+        key: "w" + tokens.join("") + it.e
+      };
+    }
+  };
+  function makeQuestion(prevKey) {
+    var q, tries = 0, gen = GEN[settings.level] || GEN.r10;
+    do { q = gen(); tries++; } while (q.key === prevKey && tries < 30);
     return q;
   }
 
   // ================= LÀM BÀI =================
-  var EMOJI = ["🍎", "⭐", "🐟", "🌸", "🍓", "🎈", "🐥", "🍊", "🚗", "🐞"];
   var CHEER_EMOJI = ["👏", "🎉", "🥳", "🌟", "👍", "🏆", "😍", "🙌"];
-  var PRAISE = [
-    "Đúng rồi! Con giỏi lắm!",
-    "Con làm đúng rồi! Hoan hô con!",
-    "Tuyệt vời! Con giỏi quá!",
-    "Chính xác! Con thông minh quá!",
-    "Đúng rồi! Con làm tốt lắm!",
-    "Giỏi quá! Con tính nhanh ghê!"
-  ];
   var game = null, busy = false, token = 0;
 
   function startGame() {
     ensureAudio(); unlockSpeech();
-    game = { idx: 0, correct: 0, streak: 0, mistakes: [], q: null, input: "", tries: 0, hintShown: false, emoji: "🍎" };
-    token++;
+    game = { idx: 0, correct: 0, streak: 0, mistakes: [], q: null, input: "", tries: 0, hintShown: false };
+    token++; $("fx").innerHTML = "";
     show("game");
     nextQuestion();
   }
-  function questionText(q, withAns) {
-    return q.a + (q.op === "+" ? " cộng " : " trừ ") + q.b + (withAns ? " bằng " + q.ans + "." : " bằng mấy?");
+  function readQuestion() { if (game) speak(game.q.speakQ); }
+
+  function renderProblem() {
+    var q = game.q, html = "";
+    var box = '<span class="answer' + (q.kind === "cmp" ? " sign" : "") + '" id="answer">&nbsp;</span>';
+    if (q.display === "eq") {
+      html = '<div class="eqline big">' + q.tokens.map(function (tok, i) {
+        if (i === q.blank) return box;
+        return typeof tok === "number" ? "<span>" + tok + "</span>" : '<span class="op">' + tok + "</span>";
+      }).join("") + "</div>";
+    } else if (q.display === "count") {
+      html = '<div class="countPic">' + q.pic + '</div><div class="eqline mid">' + box + "</div>";
+    } else {
+      html = '<div class="wpText">' + q.text + '</div><div class="wpPic">' + q.pic + '</div><div class="eqline mid">' + box + "</div>";
+    }
+    $("problem").innerHTML = html;
+    fitProblem();
   }
-  function readQuestion() { if (game) speak(questionText(game.q, false)); }
+  function fitProblem() {
+    var els = document.querySelectorAll("#problem .eqline");
+    for (var i = 0; i < els.length; i++) {
+      var el = els[i]; el.style.fontSize = "";
+      var fs = parseFloat(getComputedStyle(el).fontSize), guard = 0;
+      while (el.scrollWidth > el.clientWidth + 1 && fs > 22 && guard < 40) { fs *= 0.92; el.style.fontSize = fs + "px"; guard++; }
+    }
+  }
+  window.addEventListener("resize", function () { if (current === "game") fitProblem(); });
 
   function nextQuestion() {
     busy = false;
     game.q = makeQuestion(game.q ? game.q.key : null);
     game.input = ""; game.tries = 0;
     game.hintShown = !!settings.hint;
-    game.emoji = pick(EMOJI);
-    $("numA").textContent = game.q.a;
-    $("numB").textContent = game.q.b;
-    $("opSign").textContent = game.q.op === "+" ? "+" : "−";
-    $("progress").textContent = "Câu " + (game.idx + 1) + "/" + settings.count;
+    $("progress").textContent = t("qLabel") + " " + (game.idx + 1) + "/" + settings.count;
     $("stars").textContent = "⭐ " + game.correct;
     $("barFill").style.width = (game.idx / settings.count * 100) + "%";
+    $("numpad").hidden = game.q.kind !== "num";
+    $("cmppad").hidden = game.q.kind !== "cmp";
+    renderProblem();
     setFeedback("", "");
     renderAnswer("");
     renderHint();
-    if (settings.readQ) readQuestion();
+    if (settings.readQ || game.q.display === "word") readQuestion();
   }
   function renderAnswer(state) {
-    var el = $("answer");
-    el.className = "answer"; void el.offsetWidth;
-    if (state) el.className = "answer " + state;
+    var el = $("answer"); if (!el) return;
+    var base = "answer" + (game.q.kind === "cmp" ? " sign" : "");
+    el.className = base; void el.offsetWidth;
+    if (state) el.className = base + " " + state;
     el.innerHTML = game.input === "" ? "&nbsp;" : game.input;
+    fitProblem();
   }
   function setFeedback(text, cls) { var el = $("feedback"); el.textContent = text; el.className = "feedback" + (cls ? " " + cls : ""); }
-  function renderHint() {
-    var el = $("hint");
-    if (!game.hintShown) { el.innerHTML = ""; return; }
-    var q = game.q, e = game.emoji;
-    if (q.op === "+") {
-      el.innerHTML = '<span class="group">' + (q.a ? repeat(e, q.a) : "∅") + '</span><span class="sign">+</span><span class="group">' + (q.b ? repeat(e, q.b) : "∅") + '</span>';
-    } else {
-      el.innerHTML = '<span class="group">' + repeat(e, q.a - q.b) + (q.b ? '<span class="gone">' + repeat(e, q.b) + '</span>' : "") + '</span>';
-    }
-  }
+  function renderHint() { $("hint").innerHTML = game.hintShown ? game.q.hint : ""; }
 
   function pressKey(k) {
     if (!game || busy) return;
+    var q = game.q;
     if (k === "hint") { game.hintShown = true; renderHint(); soundTap(); return; }
+    if (q.kind === "cmp") {
+      if (k === ">" || k === "<" || k === "=") { game.input = k; soundTap(); renderAnswer(""); check(); }
+      return;
+    }
     if (k === "del") { game.input = game.input.slice(0, -1); renderAnswer(""); return; }
     if (k === "enter") { check(); return; }
     if (/^[0-9]$/.test(k)) {
-      if (game.input.length >= 2) return;
+      if (game.input.length >= 3) return;
       if (game.input === "0") game.input = "";
       game.input += k; soundTap(); renderAnswer(""); setFeedback("", "");
     }
@@ -573,15 +895,16 @@
     if (text) setTimeout(function () { if (my === token) speak(text, step); else step(); }, 250); else step();
   }
   function check() {
-    if (game.input === "") { setFeedback("Con bấm số vào ô trống nhé 😊", "info"); return; }
-    var val = parseInt(game.input, 10), q = game.q;
-    if (val === q.ans) {
+    var q = game.q;
+    if (game.input === "") { setFeedback(t("typeNum"), "info"); return; }
+    var ok = q.kind === "cmp" ? game.input === q.ans : parseInt(game.input, 10) === q.ans;
+    if (ok) {
       busy = true;
       if (game.tries === 0) { game.correct++; game.streak++; } else game.streak = 0;
       var st = $("stars"); st.textContent = "⭐ " + game.correct; st.className = "stars"; void st.offsetWidth; st.className = "stars bump";
       renderAnswer("ok");
-      var praise = pick(PRAISE);
-      if (game.streak > 0 && game.streak % 3 === 0) praise = "Con đúng " + game.streak + " câu liền rồi! Siêu quá!";
+      var praise = pick(t("praise"));
+      if (game.streak > 0 && game.streak % 3 === 0) praise = t("streak")(game.streak);
       setFeedback(praise, "ok");
       celebrate(pick(CHEER_EMOJI), praise.split("!")[0] + "!", true);
       soundCorrect();
@@ -590,18 +913,18 @@
       game.tries++; game.streak = 0; soundWrong(); busy = true;
       if (game.tries === 1) {
         renderAnswer("bad");
-        var msg = "Chưa đúng rồi, con đếm lại nhé!";
+        var msg = t("wrong1");
         setFeedback(msg + " 🤔", "bad");
         celebrate("🤔", "", false);
         game.hintShown = true; renderHint();
         afterBoth(900, msg, function () { busy = false; game.input = ""; renderAnswer(""); });
       } else {
-        game.mistakes.push(q.a + " " + (q.op === "+" ? "+" : "−") + " " + q.b + " = " + q.ans);
+        game.mistakes.push(q.full);
         game.input = String(q.ans);
         renderAnswer("reveal");
-        setFeedback("Đáp án là " + q.ans + ". Lần sau con làm được nhé! 💛", "info");
+        setFeedback(t("answerIs") + q.ans + ". " + t("nextTime") + " 💛", "info");
         game.hintShown = true; renderHint();
-        afterBoth(3000, questionText(q, true) + " Lần sau con làm được nhé!", advance);
+        afterBoth(3000, q.speakAns + " " + t("nextTime"), advance);
       }
     }
   }
@@ -609,21 +932,19 @@
 
   function finish() {
     var total = settings.count, c = game.correct, ratio = c / total;
-    var starCount = ratio === 1 ? 3 : ratio >= .7 ? 2 : ratio >= .4 ? 1 : 0;
-    $("endTitle").textContent = ratio === 1 ? "Xuất sắc! 🏆" : ratio >= .7 ? "Giỏi quá! 🎉" : ratio >= .4 ? "Cố lên nào! 💪" : "Mình luyện thêm nhé! 🌱";
-    $("endResult").textContent = "Con làm đúng " + c + "/" + total + " câu";
+    var tier = ratio === 1 ? 0 : ratio >= .7 ? 1 : ratio >= .4 ? 2 : 3;
+    var starCount = 3 - tier;
+    $("endTitle").textContent = t("titles")[tier];
+    $("endResult").textContent = t("result")(c, total);
     var html = "";
     for (var i = 0; i < 3; i++) html += '<span style="animation-delay:' + (0.3 + i * 0.35) + 's">' + (i < starCount ? "⭐" : "☆") + "</span>";
     $("endStars").innerHTML = html;
-    $("endMistakes").innerHTML = game.mistakes.length ? "Ôn lại: " + game.mistakes.map(function (m) { return "<b>" + m + "</b>"; }).join(" ") : "";
+    $("endMistakes").innerHTML = game.mistakes.length ? t("review") + game.mistakes.map(function (m) { return "<b>" + m + "</b>"; }).join(" ") : "";
     $("barFill").style.width = "100%";
     show("end");
     game = null; $("fx").innerHTML = "";
-    if (ratio >= .4) { soundWin(); confetti(90, ["⭐", "🎉", "🏆", "✨", "👏"]); } else soundCorrect();
-    var say = ratio === 1 ? "Xuất sắc! Con làm đúng hết " + total + " câu! Con giỏi quá!"
-            : ratio >= .7 ? "Giỏi quá! Con làm đúng " + c + " trên " + total + " câu!"
-            : ratio >= .4 ? "Con làm đúng " + c + " trên " + total + " câu. Cố lên con nhé!"
-            : "Con làm đúng " + c + " câu. Mình luyện thêm nhé, con sẽ giỏi hơn!";
+    if (tier <= 2) { soundWin(); confetti(90, ["⭐", "🎉", "🏆", "✨", "👏"]); } else soundCorrect();
+    var say = t("endSay")[tier](c, total);
     setTimeout(function () { speak(say); }, 600);
   }
 
@@ -633,23 +954,24 @@
   $("backBtn").addEventListener("click", function () { stopSpeak(); show("home"); });
   $("homeBtn").addEventListener("click", function () { token++; game = null; busy = false; stopSpeak(); $("fx").innerHTML = ""; show("home"); });
   $("speakBtn").addEventListener("click", function () { ensureAudio(); readQuestion(); this.blur(); });
-  var keys = document.querySelectorAll("#keypad .key");
+  var keys = document.querySelectorAll(".keypad .key");
   for (var j = 0; j < keys.length; j++) keys[j].addEventListener("click", function () { ensureAudio(); pressKey(this.getAttribute("data-k")); this.blur(); });
 
-  // Bàn phím rời (nếu iPad có gắn bàn phím) vẫn dùng được
   document.addEventListener("keydown", function (e) {
     var k = e.key;
     if (current !== "game") { if (k === "Enter" && e.target.tagName !== "SELECT") { e.preventDefault(); startGame(); } return; }
-    if (/^[0-9]$/.test(k)) { e.preventDefault(); pressKey(k); }
+    if (/^[0-9]$/.test(k) || k === ">" || k === "<" || k === "=") { e.preventDefault(); pressKey(k); }
     else if (k === "Backspace" || k === "Delete") { e.preventDefault(); pressKey("del"); }
     else if (k === "Enter") { e.preventDefault(); pressKey("enter"); }
     else if (k === " ") { e.preventDefault(); readQuestion(); }
   });
 
+  // Dùng cho kiểm tra tự động
+  window.__bht = { q: function () { return game && game.q; }, gen: GEN, settings: settings };
+
   show("home");
 })();
 </script>
-
 <script>
   // Cho phép mở app khi không có mạng (sau lần mở đầu tiên)
   if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); }); }
